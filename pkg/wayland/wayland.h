@@ -153,6 +153,7 @@ void get_dimensions(int32_t *w, int32_t *h);
 uint32_t get_last_key();
 uint32_t get_last_key_state();
 void clear_last_key();
+void add_cancel_button(uint32_t btn);
 EGLNativeWindowType native_window(struct wl_egl_window *egl_window);
 
 extern struct wl_compositor *compositor;

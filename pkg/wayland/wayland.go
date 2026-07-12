@@ -203,6 +203,10 @@ func (w *WaylandWindow) ClearLastKey() {
 	C.clear_last_key()
 }
 
+func (w *WaylandWindow) AddCancelButton(btn uint32) {
+	C.add_cancel_button(C.uint32_t(btn))
+}
+
 func (w *WaylandWindow) Destroy() {
 	if w.eglContext != C.EGLContext(C.EGL_NO_CONTEXT) {
 		C.eglDestroyContext(w.eglDisplay, w.eglContext)

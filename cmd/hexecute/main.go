@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -33,6 +35,7 @@ func main() {
 	learnCommand := flag.String("learn", "", "Learn a new gesture for the specified command")
 	listGestures := flag.Bool("list", false, "List all registered gestures")
 	removeGesture := flag.String("remove", "", "Remove a gesture by command name")
+	cancelKeys := flag.String("cancel-keys", "", "Comma-separated list of additional key/button codes to cancel the gesture")
 	flag.Parse()
 
 	if flag.NArg() > 0 {
@@ -97,6 +100,18 @@ func main() {
 		log.Fatal("Failed to create Wayland window:", err)
 	}
 	defer window.Destroy()
+
+	if *cancelKeys != "" {
+		for _, btnStr := range strings.Split(*cancelKeys, ",") {
+			if btnStr == "" {
+				continue
+			}
+			btn, err := strconv.Atoi(strings.TrimSpace(btnStr))
+			if err == nil {
+				window.AddCancelButton(uint32(btn))
+			}
+		}
+	}
 
 	settings, err := config.LoadSettings()
 	if err != nil {

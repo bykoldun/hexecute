@@ -294,6 +294,17 @@ static int button_state = 0;
 static double mouse_x = 0;
 static double mouse_y = 0;
 static int32_t touch_id = -1;
+static uint32_t last_key = 0;
+static uint32_t last_key_state = 0;
+
+static uint32_t cancel_buttons[32];
+static int cancel_buttons_count = 0;
+
+void add_cancel_button(uint32_t btn) {
+  if (cancel_buttons_count < 32) {
+    cancel_buttons[cancel_buttons_count++] = btn;
+  }
+}
 
 void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial,
                    struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y) {
@@ -315,6 +326,15 @@ void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial,
                     uint32_t time, uint32_t button, uint32_t state) {
   if (button == 272) {
     button_state = state;
+  }
+  for (int i = 0; i < cancel_buttons_count; i++) {
+    if (button == cancel_buttons[i]) {
+      if (state == 1) {
+        last_key = 0xff1b;
+        last_key_state = 1;
+      }
+      break;
+    }
   }
 }
 
@@ -496,8 +516,7 @@ static const struct wl_touch_listener touch_listener = {
     .orientation = touch_orientation,
 };
 
-static uint32_t last_key = 0;
-static uint32_t last_key_state = 0;
+
 
 void keyboard_keymap(void *data, struct wl_keyboard *keyboard, uint32_t format,
                      int32_t fd, uint32_t size) {
